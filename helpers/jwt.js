@@ -27,4 +27,8 @@ async function isRevoked(req, payload, done) {
     done()
 }
 
+<<<<<<< HEAD
 module.exports = authJwt
+=======
+module.exports = authJwt
+>>>>>>> debugging
