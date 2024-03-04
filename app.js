@@ -30,9 +30,12 @@ app.use(`${api}/orders`, ordersRoutes)
 app.use(`${api}/users`, usersRoutes)
 
 //Database Connection
-mongoose
-    .connect(process.env.DB_CONNECTION_STRING)
-    .then(() => {
+mongoose.connect(process.env.DB_CONNECTION_STRING, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    dbName: 'ecommerce_db'
+})
+.then(() => {
         console.log('Connection is ready!')
     })
     .catch((err) => {

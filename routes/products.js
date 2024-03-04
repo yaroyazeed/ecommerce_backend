@@ -36,9 +36,11 @@ router.get(`/:id`, async (req, res) => {
     const product = await Product.findById(req.params.id).populate('category');
  
     if(!product){
-        res.status(500).json({success: false})
+        res.status(500).json({success: false, message: 'Product not found'})
     }
-    res.send(product)
+    else{
+        res.send(product)
+    }
 })
 
 
@@ -74,7 +76,7 @@ router.post(`/`, async (req, res) => {
 })
 
 //Update product
-router.put('/:id', async (req, res) => {
+router.put(`/:id`, async (req, res) => {
     //validate if product ID exists
     if(!mongoose.isValidObjectId(req.params.id)){
         res.status(400).send('Invalid product ID')
@@ -114,7 +116,7 @@ router.put('/:id', async (req, res) => {
 })
 
 //Delete product
-router.delete('/:id', (req, res) => {
+router.delete(`/:id`, (req, res) => {
     Product.findByIdAndDelete(req.params.id).then(product => {
         if(product){
             return res.status(200).json({
