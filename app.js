@@ -6,6 +6,8 @@ require('dotenv/config')
 const cors = require('cors')
 const authJwt = require('./helpers/jwt')
 const errorHandler = require('./helpers/error-handler')
+const path = require("path");
+
 
 //Middleware
 app.use(cors())
@@ -13,7 +15,9 @@ app.options('*', cors())
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(authJwt())
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'))
 app.use(errorHandler)
+
 
 //Routes
 const productRoutes = require('./routes/products')
