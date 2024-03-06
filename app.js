@@ -33,6 +33,7 @@ app.use(`${api}/users`, usersRoutes)
 mongoose.connect(process.env.DB_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
     dbName: 'ecommerce_db'
 })
 .then(() => {
