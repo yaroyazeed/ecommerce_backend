@@ -3,7 +3,37 @@ const {Category} = require('../models/category')
 const express = require('express')
 const router = express.Router();
 const mongoose = require('mongoose')
+const multer = require('multer')
 
+
+const FILE_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpg',
+    'image/webp': 'webp'
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const isValid = FILE_TYPE_MAP[file.mimetype]
+        let uploadError = new Error('Invalid image type')
+
+        if(isValid){
+            uploadError = null
+        }
+      cb(uploadError, 'public/uploads')
+    },
+    filename: function (req, file, cb) {
+    //   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    const filename = file.originalname.replace(' ', '-')
+    const extension = FILE_TYPE_MAP[file.mimetype]
+    cb(null, `${filename}-${Date.now()}.${extension}`)
+    //   cb(null, file.fieldname + '-' + uniqueSuffix)
+    }
+  })
+
+  const uploadOptions = multer({ storage: storage })
+//   const upload = multer({ storage: storage })
 
 //GET list of products
 router.get(`/`, async (req, res) => {
@@ -45,19 +75,20 @@ router.get(`/:id`, async (req, res) => {
 
 
 //POST a new product
-router.post(`/`, async (req, res) => {
+router.post(`/`, uploadOptions.single('image'), async (req, res) => {
     
     //Validate if provided category exists
     const category = await Category.findById(req.body.category)
-    if(!category){
-        return res.status(400).send('Invalid category')
-    }
+    if(!category){return res.status(400).send('Invalid category')}
+
+    const fileName = req.file.filename
+    const basePath = `${req.protocol}://${req.get('host')}/public/upload/`
     
     var product = new Product({
        name: req.body.name,
        description: req.body.description,
        richDescription: req.body.richDescription,
-       image: req.body.image,
+       image: `${basePath}${fileName}`,
        brand: req.body.brand,
        price: req.body.price,
        category: req.body.category,
